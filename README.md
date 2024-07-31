@@ -1,6 +1,6 @@
 # Knight Moves - Coding Challenge
 
-Braulio De La Torre Submission for Venteur
+Braulio De La Torre 
 
 
 # How It works - Endpoints
