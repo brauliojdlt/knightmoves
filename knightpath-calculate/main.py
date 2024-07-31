@@ -1,6 +1,7 @@
 import os
 import functions_framework
 from logger import log
+from ChessPosition import ChessPosition
 from service import (
     calculate_shortest_path, 
     chess_to_cartesian, 
@@ -36,18 +37,17 @@ def knightpath_calculate(request):
     target = request_json.get("target")
     operation_id = request_json.get("operation_id")
 
-
-    source_cart = chess_to_cartesian(source)
-    target_cart = chess_to_cartesian(target)
-    
-    if not source_cart or not target_cart:
+    try:
+        start_pos = ChessPosition(notation=source)
+        end_pos = ChessPosition(notation=target)
+    except ValueError as e:
         return "Required field source or target is missing or incorret",400
     
     path = []
     
     num_of_moves, path = calculate_shortest_path(
-        source_cart,
-        target_cart
+        start_pos.to_coords(),
+        end_pos.to_coords()
     )
     
     chess_path = ""
@@ -63,6 +63,7 @@ def knightpath_calculate(request):
     
     log(f"Number of moves {num_of_moves} Shortes path: {path} \n {chess_path}")
     
+
     res = update_operation(
         source,
         target,
@@ -71,6 +72,5 @@ def knightpath_calculate(request):
         chess_path
         )
     
-    if not res:
-        return "Failure - check logs", 500
+
     return "Success", 200

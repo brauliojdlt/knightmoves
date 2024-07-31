@@ -2,8 +2,9 @@ import functions_framework
 import uuid
 import os
 
+from ChessPosition import ChessPosition
 from operation import get_operation
-from service import calculate_moves, check_cases
+from service import calculate_moves
 import threading
 
 
@@ -60,17 +61,20 @@ def knight_moves(request):
         if not target:
             return "Missing required field target", 400
         
-        start_check = check_cases(source)
-        target_check = check_cases(target)
-        
-        if not start_check or not target_check:
-            return "Invalid source or target position",400
+
+
+        try:
+            start_pos = ChessPosition(notation=source)
+            end_pos = ChessPosition(notation=target)
+        except ValueError as e:
+            return f"Invalid source or target position: {str(e)}",400
+  
         
         operation_id = str(uuid.uuid4())
         
         
         # Make it Async!
-        t = threading.Thread(target=calculate_moves,args=(source,target,operation_id))
+        t = threading.Thread(target=calculate_moves,args=(start_pos.to_notation(),end_pos.to_notation(),operation_id))
         t.start()
 
         

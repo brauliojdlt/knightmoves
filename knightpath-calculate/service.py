@@ -4,7 +4,7 @@ from firebase_admin import exceptions
 from logger import log
 import google.cloud.firestore
 from firebase_admin import initialize_app, firestore, credentials
-
+from flask import abort
 
 app = initialize_app(options={'projectId':'pedregosa-sb'})
 firestore_client: google.cloud.firestore.Client = firestore.client()
@@ -128,7 +128,7 @@ def calculate_shortest_path(source_val: tuple, target_val: tuple):
 
 
 
-def update_operation(source, target, operation_id, num_of_moves, shortest_path):
+def update_operation(source:str, target:str, operation_id:str, num_of_moves: int, shortest_path: str) -> str:
     """
         Creates knight moves object in firebase
     """
@@ -145,7 +145,7 @@ def update_operation(source, target, operation_id, num_of_moves, shortest_path):
         
     except exceptions.FirebaseError as e:
         log(f"Exception occurreed while create operation in db {str(e)}")
-        return False
+        abort(500,description=f'Internal error when updating shortest path')
 
     
     return operation_id
